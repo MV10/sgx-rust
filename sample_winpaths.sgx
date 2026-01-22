@@ -1,0 +1,91 @@
+﻿##########################################################################
+# SlideGridX Config File
+#
+# If any value is omitted, the  first listed value is the default, and
+# Shuffle Time defaults to 10 seconds. Any invalid option aborts the load.
+
+##########################################################################
+# The Playback section settings are as follows:
+#
+# RandomizeMode
+#    Shuffle
+#    Sequential 
+#    SequentialRandomStart
+#    ShuffleSequences
+#
+# SequenceMode
+#    NotSequenced
+#    ByFilename
+#    ByTimestamp
+#
+# HighlightMode
+#    SameAsContent
+#    AlwaysShuffle
+#
+# StaggerMode
+#    Synchronized
+#    Staggered
+#
+# ShuffleTime
+#    seconds, 0.5 or greater (default is 10.0)
+#
+# SequenceLength
+#    default is 5
+#
+# HighlightFrequency
+#    percentage, 1 to 99 (default is 5)
+
+##########################################################################
+# The Grid section contains x,y,w,h,a,r where 'a' is AdvanceMode
+# and 'r' is ResizeMode (below). Grid ID numbers are 0-based and
+# sequential, and no more than 10 are currently supported.
+#
+# AdvanceMode
+#    Automatic
+#    Manual
+#
+# ResizeMode (currently ignored; always sizes to fit, retaining aspect)
+#    LargestDimension
+#    ByWidth
+#    ByHeight
+
+##########################################################################
+# The Content and Highlights sections are simple lists of fully qualified
+# image pathnames, or a path ending in a '*' wildcard. UNC pathnames are
+# permitted but the application will not prompt for credentials.
+# Supported image formats (by file extension):
+# .jpg, .jpeg, .png, .bmp
+
+##########################################################################
+
+
+[Playback]
+RandomizeMode: ShuffleSequences
+SequenceMode: ByTimestamp
+HighlightMode: AlwaysShuffle
+StaggerMode: Synchronized
+ShuffleTime: 10
+SequenceLength: 7
+HighlightFreq: 15
+
+[Grids]
+0,0,1920,2160,Automatic,LargestDimension
+3840,0,1920,2160,Automatic,LargestDimension
+5760,0,1920,2160,Automatic,LargestDimension
+
+[Grids]
+   0,   0,1280,720,Automatic,LargestDimension
+1280,   0,1280,720,Automatic,LargestDimension
+2560,   0,1280,720,Automatic,LargestDimension
+   0, 720,1280,720,Automatic,LargestDimension
+1280, 720,1280,720,Automatic,LargestDimension
+2560, 720,1280,720,Automatic,LargestDimension
+   0,1440,1280,720,Automatic,LargestDimension
+1280,1440,1280,720,Automatic,LargestDimension
+2560,1440,1280,720,Automatic,LargestDimension
+
+[Content]
+D:\Wallpaper\*
+
+[Highlights]
+D:\memes\*

@@ -1,0 +1,263 @@
+import { Button, ComboBox, LineEdit, StandardListView } from "std-widgets.slint";
+
+component Label inherits Text {
+    color: #000000;
+    font-size: 12px;
+}
+
+component BoldLabel inherits Text {
+    color: #000000;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+component MonoLabel inherits Text {
+    color: #000000;
+    font-size: 11px;
+    font-family: "Liberation Mono";
+}
+
+// Text input with visible border
+component BorderedInput inherits Rectangle {
+    in-out property <string> text;
+    in-out property <bool> read-only: false;
+
+    border-width: 1px;
+    border-color: #888888;
+    background: white;
+
+    LineEdit {
+        x: 0; y: 0;
+        width: parent.width;
+        height: parent.height;
+        text <=> parent.text;
+        read-only: parent.read-only;
+    }
+}
+
+// ListBox with visible border
+component BorderedListView inherits Rectangle {
+    in-out property <[StandardListViewItem]> model;
+    in-out property <int> current-item: -1;
+
+    border-width: 1px;
+    border-color: #888888;
+    background: white;
+
+    StandardListView {
+        x: 1px; y: 1px;
+        width: parent.width - 2px;
+        height: parent.height - 2px;
+        model: parent.model;
+        current-item <=> parent.current-item;
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "slidegrid";
+    width: 800px;
+    height: 512px;
+    background: #f0f0f0;
+
+    // === Properties ===
+    in-out property <string> txt-playlist: "";
+    in-out property <[StandardListViewItem]> lst-grid-items: [];
+    in-out property <[StandardListViewItem]> lst-content-items: [];
+    in-out property <[StandardListViewItem]> lst-highlight-items: [];
+    in-out property <int> lst-grid-selected: -1;
+    in-out property <int> lst-content-selected: -1;
+    in-out property <int> lst-highlight-selected: -1;
+    in-out property <image> pic-preview;
+    in-out property <string> lbl-full-pathname: "";
+    in-out property <int> cmb-advance: 0;
+    in-out property <int> cmb-resize: 0;
+    in-out property <string> txt-shuffle-time: "4";
+    in-out property <int> cmb-stagger: 0;
+    in-out property <int> cmb-randomize: 0;
+    in-out property <int> cmb-sequencing: 0;
+    in-out property <int> cmb-higlights: 0;
+    in-out property <string> txt-length: "7";
+    in-out property <string> txt-freq: "5";
+
+    // === Callbacks ===
+    callback btn-play-clicked();
+    callback btn-new-clicked();
+    callback btn-load-clicked();
+    callback btn-save-clicked();
+    callback btn-help-clicked();
+    callback btn-github-clicked();
+    callback btn-open-clicked();
+    callback btn-grid-add();
+    callback btn-grid-remove();
+    callback btn-grid-up();
+    callback btn-grid-down();
+    callback btn-content-add();
+    callback btn-content-remove();
+    callback btn-content-clear();
+    callback btn-content-up();
+    callback btn-content-down();
+    callback btn-hilight-add();
+    callback btn-hilight-remove();
+    callback btn-hilight-clear();
+    callback btn-hilight-up();
+    callback btn-hilight-down();
+
+    // ============================================
+    // PLAYLIST SECTION (no border around group)
+    // ============================================
+    Label { x: 12px; y: 8px; text: "Playlist"; }
+
+    // Playlist path (read-only with border)
+    BorderedInput {
+        x: 12px; y: 24px; width: 415px; height: 23px;
+        text <=> txt-playlist;
+        read-only: true;
+    }
+
+    // Top row buttons
+    Button { x: 478px; y: 24px; width: 75px; height: 23px; text: "Play"; clicked => { btn-play-clicked(); } }
+    Button { x: 623px; y: 24px; width: 75px; height: 23px; text: "Help..."; clicked => { btn-help-clicked(); } }
+    Button { x: 704px; y: 24px; width: 75px; height: 23px; text: "Github..."; clicked => { btn-github-clicked(); } }
+
+    // Second row buttons
+    Button { x: 12px; y: 53px; width: 75px; height: 23px; text: "New..."; clicked => { btn-new-clicked(); } }
+    Button { x: 93px; y: 53px; width: 75px; height: 23px; text: "Load..."; clicked => { btn-load-clicked(); } }
+    Button { x: 174px; y: 53px; width: 75px; height: 23px; text: "Save"; clicked => { btn-save-clicked(); } }
+
+    // ============================================
+    // LIST SECTION - Labels
+    // ============================================
+    BoldLabel { x: 12px; y: 85px; text: "Grid"; }
+    BoldLabel { x: 221px; y: 85px; text: "Content"; }
+    Button { x: 365px; y: 82px; width: 46px; height: 23px; text: "clear"; clicked => { btn-content-clear(); } }
+    BoldLabel { x: 429px; y: 85px; text: "Highlights"; }
+    Button { x: 573px; y: 82px; width: 46px; height: 23px; text: "clear"; clicked => { btn-hilight-clear(); } }
+    BoldLabel { x: 640px; y: 85px; text: "Preview"; }
+
+    // ============================================
+    // LIST SECTION - ListBoxes with borders
+    // ============================================
+    BorderedListView {
+        x: 12px; y: 105px; width: 190px; height: 130px;
+        model <=> lst-grid-items;
+        current-item <=> lst-grid-selected;
+    }
+    BorderedListView {
+        x: 221px; y: 105px; width: 190px; height: 130px;
+        model <=> lst-content-items;
+        current-item <=> lst-content-selected;
+    }
+    BorderedListView {
+        x: 429px; y: 105px; width: 190px; height: 130px;
+        model <=> lst-highlight-items;
+        current-item <=> lst-highlight-selected;
+    }
+
+    // Preview
+    Rectangle {
+        x: 640px; y: 105px; width: 148px; height: 130px;
+        background: white;
+        border-width: 1px;
+        border-color: #888888;
+
+        if pic-preview.width > 0: Image {
+            source: pic-preview;
+            image-fit: contain;
+            width: 100%; height: 100%;
+        }
+    }
+
+    // ============================================
+    // LIST SECTION - Buttons
+    // ============================================
+    Button { x: 12px; y: 241px; width: 43px; height: 28px; text: "+"; clicked => { btn-grid-add(); } }
+    Button { x: 61px; y: 241px; width: 43px; height: 28px; text: "×"; clicked => { btn-grid-remove(); } }
+    Button { x: 110px; y: 241px; width: 43px; height: 28px; text: "↑"; clicked => { btn-grid-up(); } }
+    Button { x: 159px; y: 241px; width: 43px; height: 28px; text: "↓"; clicked => { btn-grid-down(); } }
+
+    Button { x: 221px; y: 241px; width: 43px; height: 28px; text: "+"; clicked => { btn-content-add(); } }
+    Button { x: 270px; y: 241px; width: 43px; height: 28px; text: "×"; clicked => { btn-content-remove(); } }
+    Button { x: 319px; y: 241px; width: 43px; height: 28px; text: "↑"; clicked => { btn-content-up(); } }
+    Button { x: 368px; y: 241px; width: 43px; height: 28px; text: "↓"; clicked => { btn-content-down(); } }
+
+    Button { x: 429px; y: 241px; width: 43px; height: 28px; text: "+"; clicked => { btn-hilight-add(); } }
+    Button { x: 478px; y: 241px; width: 43px; height: 28px; text: "×"; clicked => { btn-hilight-remove(); } }
+    Button { x: 527px; y: 241px; width: 43px; height: 28px; text: "↑"; clicked => { btn-hilight-up(); } }
+    Button { x: 576px; y: 241px; width: 43px; height: 28px; text: "↓"; clicked => { btn-hilight-down(); } }
+
+    Button { x: 640px; y: 241px; width: 148px; height: 23px; text: "Open..."; clicked => { btn-open-clicked(); } }
+
+    // ============================================
+    // SETTINGS SECTION - Labels
+    // ============================================
+    BoldLabel { x: 12px; y: 280px; text: "Grid settings"; }
+    BoldLabel { x: 221px; y: 280px; text: "Playback settings"; }
+    BoldLabel { x: 598px; y: 280px; text: "Playback Command Keys"; }
+
+    // ============================================
+    // GRID SETTINGS
+    // ============================================
+    ComboBox {
+        x: 12px; y: 298px; width: 190px; height: 23px;
+        model: ["Automatic advance", "Manual advance"];
+        current-index <=> cmb-advance;
+    }
+    ComboBox {
+        x: 12px; y: 327px; width: 190px; height: 23px;
+        model: ["Resize by largest dimension", "Resize by width", "Resize by height"];
+        current-index <=> cmb-resize;
+    }
+    Label { x: 12px; y: 359px; text: "Shuffle time (seconds):"; }
+    BorderedInput { x: 149px; y: 356px; width: 53px; height: 23px; text <=> txt-shuffle-time; }
+    ComboBox {
+        x: 12px; y: 385px; width: 190px; height: 23px;
+        model: ["Staggered shuffle", "Synchronized shuffle", "No shuffle"];
+        current-index <=> cmb-stagger;
+    }
+
+    // ============================================
+    // PLAYBACK SETTINGS
+    // ============================================
+    ComboBox {
+        x: 221px; y: 298px; width: 190px; height: 23px;
+        model: ["Shuffle sequences", "Sequential playback"];
+        current-index <=> cmb-randomize;
+    }
+    ComboBox {
+        x: 221px; y: 327px; width: 190px; height: 23px;
+        model: ["Sequence by filename", "Sequence by timestamp"];
+        current-index <=> cmb-sequencing;
+    }
+    Label { x: 429px; y: 306px; text: "Max sequence length (+2)"; }
+    BorderedInput { x: 429px; y: 327px; width: 86px; height: 23px; text <=> txt-length; }
+    Label { x: 221px; y: 367px; text: "Highlight playback"; }
+    ComboBox {
+        x: 221px; y: 385px; width: 190px; height: 23px;
+        model: ["Same as Content (above)", "Random", "Sequential"];
+        current-index <=> cmb-higlights;
+    }
+    Label { x: 429px; y: 367px; text: "Highlight freq %"; }
+    BorderedInput { x: 429px; y: 385px; width: 86px; height: 23px; text <=> txt-freq; }
+
+    // ============================================
+    // PLAYBACK COMMAND KEYS (monospaced)
+    // ============================================
+    MonoLabel { x: 598px; y: 298px; text: "0-9   Active grid"; }
+    MonoLabel { x: 598px; y: 314px; text: "~     All grids active"; }
+    MonoLabel { x: 598px; y: 330px; text: "I     Identify grids"; }
+    MonoLabel { x: 598px; y: 346px; text: "<->   Previous / Next"; }
+    MonoLabel { x: 598px; y: 362px; text: "SPC   Auto/Manual toggle"; }
+    MonoLabel { x: 598px; y: 378px; text: "ENT   Highlights-only toggle"; }
+    MonoLabel { x: 598px; y: 394px; text: "/     File info toggle"; }
+    MonoLabel { x: 598px; y: 410px; text: "ESC   End playback"; }
+
+    // ============================================
+    // FULL PATHNAME
+    // ============================================
+    Label { x: 12px; y: 435px; text: "Full pathname (content or highlight)"; }
+    BorderedInput {
+        x: 12px; y: 452px; width: 776px; height: 23px;
+        text <=> lbl-full-pathname;
+        read-only: true;
+    }
+}
